@@ -1,0 +1,67 @@
+﻿@page "/StudentList"
+
+<div class="Heading">
+	<h1>List Of Students</h1>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">National ID</th>
+			<th scope="col">FullName</th>
+			<th scope="col">Age</th>
+			<th scope="col">Address</th>
+			<th scope="col">Email</th>
+			<th scope="col">Phone Number</th>
+			<th><button @onclick="() => deleteAll()" class="delete">Delete All</button></th>
+
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			counter = 1;
+		}
+		@foreach (var student in students)
+		{
+			<tr>
+				<th scope="row">@counter</th>
+				<td>@student.NationalID</td>
+				<td>@student.FirstName @student.MiddleName @student.LastName</td>
+				<td>@student.CalcAge()</td>
+				<td>@student.Address</td>
+				<td>@student.Emaill</td>
+				<td>@student.PhoneNumber</td>
+				<td><button @onclick="() => delete(student)" class="delete">Delete</button></td>
+			</tr>
+			counter++;
+		}
+	</tbody>
+</table>
+@code
+{
+	SchoolSystemDB dB = new();
+	List<Student> students = new List<Student>();
+	private int counter;
+
+	protected override void OnInitialized()
+	{
+		students = dB.students.ToList();
+		base.OnInitialized();
+	}
+	void delete(Student student)
+	{
+		dB.students.Remove(student);
+		dB.SaveChanges();
+		students.Remove(student);
+	}
+	void deleteAll()
+	{
+		if (students.Count > 0)
+		{
+			dB.students.RemoveRange(students);
+			students.Clear();
+			dB.SaveChanges();
+		}
+	}
+}

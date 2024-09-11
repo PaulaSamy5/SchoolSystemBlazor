@@ -1,0 +1,52 @@
+﻿@page "/CoursesList"
+
+<div class="Heading">
+	<h1>List Of Courses</h1>
+</div>
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Course Name</th>
+			<th><button @onclick="() => deleteAll()" class="delete">Delete All</button></th>
+		</tr>
+	</thead>
+	<tbody>
+		@{int counter = 1;}
+		@foreach (var course in courses)
+		{
+			<tr>
+				<th scope="row">@counter</th>
+				<td>@course.CourseName</td>
+				<td><button @onclick="() => delete(course)" class="delete">Delete</button></td>
+			</tr>
+			counter++;
+		}
+	</tbody>
+</table>
+@code {
+	SchoolSystemDB dB = new();
+	List<Course> courses = new List<Course>();
+	protected override void OnInitialized()
+	{
+		courses = dB.Courses.ToList();
+		base.OnInitialized();
+	}
+	void delete(Course course)
+	{
+		dB.Courses.Remove(course);
+		dB.SaveChanges();
+		courses.Remove(course);
+	}
+	void deleteAll()
+	{
+		if (courses.Count > 0)
+		{
+			dB.Courses.RemoveRange(courses);
+			courses.Clear();
+			dB.SaveChanges();
+		}
+	}
+}

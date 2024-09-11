@@ -1,0 +1,58 @@
+﻿@page "/InstructorList"
+<div class="Heading">
+	<h1>List Of Instructors</h1>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Instructor Name</th>
+			<th scope="col">Salary</th>
+			<th scope="col">Course</th>
+			<th><button @onclick="() => deleteAll()" class="delete">Delete All</button></th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			int counter = 1;
+		}
+		@foreach (var instructor in instructors)
+		{
+			<tr>
+				<th scope="row">@counter</th>
+				<td>@instructor.Name</td>
+				<td>@instructor.Salary</td>
+				<td>@instructor.Course.CourseName</td>
+				<td><button @onclick="() => delete(instructor)" class="delete">Delete</button></td>
+			</tr>
+			counter++;
+		}
+	</tbody>
+</table>
+@code {
+	SchoolSystemDB dB = new();
+	List<Instructor> instructors = new List<Instructor>();
+	List<Course> courses = new();
+	protected override void OnInitialized()
+	{
+		instructors = dB.Instructors.ToList();
+		courses = dB.Courses.ToList();
+		base.OnInitialized();
+	}
+	void delete(Instructor instructor)
+	{
+		dB.Instructors.Remove(instructor);
+		dB.SaveChanges();
+		instructors.Remove(instructor);
+	}
+	void deleteAll()
+	{
+		if (instructors.Count > 0)
+		{
+			dB.Instructors.RemoveRange(instructors);
+			instructors.Clear();
+			dB.SaveChanges();
+		}
+	}
+}

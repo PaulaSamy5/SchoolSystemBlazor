@@ -1,0 +1,85 @@
+﻿@page "/"
+
+<div class="welcome-container">
+    <h3>Welcome to our School System🤍</h3>
+    <p class="intro-text">Feel free to explore and enjoy your journey❤️</p>
+</div>
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at center, #dce4ef, #f7f9fc);
+        margin: 0;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden; /* Ensure no scrollbars appear */
+    }
+
+    .welcome-container {
+        position: absolute;
+        top: 50%;
+        left: 55%;
+        transform: translate(-50%, -50%); /* Center the element */
+        text-align: center;
+        background-color: #ffffff;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 90%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        animation: fadeIn 2s ease;
+    }
+
+        .welcome-container:hover {
+            transform: translate(-50%, -50%) scale(1.05); /* Ensure scaling does not affect centering */
+            box-shadow: 0 15px 60px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+        }
+
+    h3 {
+        font-size: 2.8rem;
+        color: #2d4059;
+        margin-bottom: 15px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .intro-text {
+        font-size: 1.4rem;
+        color: #6c7b8a;
+        margin-bottom: 25px;
+        font-weight: 300;
+    }
+
+    /* Animation for smooth fade-in effect */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        to {
+            opacity: 1;
+            /* transform: translateY(0); */
+        }
+    }
+
+    /* Responsive design for smaller devices */
+    @@media (max-width: 600px) {
+        h3 {
+            font-size: 2.2rem;
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+        }
+
+        .welcome-container {
+            padding: 30px;
+        }
+    }
+</style>

@@ -1,0 +1,114 @@
+﻿@page "/AddStudent"
+@inject NavigationManager NavigationManager
+@if (!Success)
+{
+	<EditForm Model="student" OnValidSubmit="onValidSubmit">
+		<DataAnnotationsValidator />
+
+		<label>Student Name</label>
+		<div class="StudentName">
+			<InputText placeholder="First Name" @bind-Value="student.FirstName" />
+			<InputText placeholder="Middle Name" @bind-Value="student.MiddleName" />
+			<InputText placeholder="Last Name" @bind-Value="student.LastName" />
+		</div>
+		<div class="inputs">
+			<label>National ID</label>
+			<InputText type="text" placeholder="like ****,****,****,****" @bind-Value="student.NationalID" />
+		</div>
+		<div class="inputs">
+			<label>Phone Number</label>
+			<InputText placeholder="like 01*********" @bind-Value="student.PhoneNumber" />
+		</div>
+		<div class="inputs">
+			<label>Emaill Address</label>
+			<InputText type="email" name="name" placeholder="Your Address" @bind-Value="student.Emaill" />
+		</div>
+		<div class="inputs">
+			<label>Birth Date</label>
+			<InputDate placeholder="mm/dd/yyyy" @bind-Value="student.BirthDate" />
+		</div>
+
+		<div class="inputs">
+			<label>Address</label>
+			<InputText placeholder="Your Address" @bind-Value="student.Address" />
+		</div>
+		<div class="Button">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</EditForm>
+}
+else
+{
+	<EditForm Model="student" OnValidSubmit="onValidSubmit">
+		<DataAnnotationsValidator />
+		<label>Student Name</label>
+		<div class="StudentName">
+			<InputText placeholder="First Name" @bind-Value="student.FirstName" />
+			<InputText placeholder="Middle Name" @bind-Value="student.MiddleName" />
+			<InputText placeholder="Last Name" @bind-Value="student.LastName" />
+		</div>
+		<div class="inputs">
+			<label>National ID</label>
+			<InputText type="text" placeholder="like ****,****,****,****" @bind-Value="student.NationalID" />
+			<p>@InvalidID</p>
+		</div>
+		<div class="inputs">
+			<label>Phone Number</label>
+			<InputText placeholder="like 01*********" @bind-Value="student.PhoneNumber" />
+			<p>@InvalidPhoneNumber</p>
+
+		</div>
+		<div class="inputs">
+			<label>Emaill Address</label>
+			<InputText type="email" name="name" placeholder="Your Address" @bind-Value="student.Emaill" />
+			<p>@InvalidEmail</p>
+
+		</div>
+		<div class="inputs">
+			<label>Birth Date</label>
+			<InputDate placeholder="mm/dd/yyyy" @bind-Value="student.BirthDate" />
+		</div>
+
+
+		<div class="inputs">
+			<label>Address</label>
+			<InputText placeholder="Your Address" @bind-Value="student.Address" />
+		</div>
+		<p class=""></p>
+		<Success Added="@Name" />
+		<div class="Button">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</EditForm>
+}
+
+<button class="btn-showData student" @onclick="ShowstudentsData">See The students we Have</button>
+@code
+{
+	//private string date = student.BirthDate.ToString("yyyy/MM/dd");
+
+	private string Name = "student";
+	private string InvalidEmail = string.Empty;
+	private string InvalidPhoneNumber = string.Empty;
+	private string InvalidID = string.Empty;
+	bool Success = false;
+	SchoolSystemDB dB = new SchoolSystemDB();
+	Student student = new Student();
+	void onValidSubmit()
+	{
+
+		student.Age = @student.CalcAge();
+		InvalidEmail = string.Empty;
+		InvalidID = string.Empty;
+		InvalidPhoneNumber = string.Empty;
+		dB.students.Add(student);
+		dB.SaveChanges();
+		student = new Student();
+		Success = true;
+
+	}
+	void ShowstudentsData()
+	{
+		NavigationManager.NavigateTo("StudentList");
+	}
+}

@@ -1,0 +1,81 @@
+﻿@page "/AddInstructor"
+@inject NavigationManager NavigationManager
+@if (!Success)
+{
+	<EditForm Model="instructor" OnValidSubmit="onValidSubmit">
+		<DataAnnotationsValidator/>
+		<div class="inputs">
+			<label>Instructor Name</label>
+			<InputText type="text" placeholder="" @bind-Value="instructor.Name" />
+		</div>
+		<div class="inputs">
+			<label>Salary</label>
+			<InputNumber @bind-Value="instructor.Salary" />
+		</div>
+		<div class="inputs">
+			<label>Course</label>
+			<InputSelect @bind-Value="instructor.Courseid">
+				@foreach (var course in courses)
+				{
+					<option value="@course.Id">@course.CourseName</option>
+				}
+			</InputSelect>
+		</div>
+		<div class="Button">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</EditForm>
+}
+else
+{
+	<EditForm Model="instructor" OnValidSubmit="onValidSubmit">
+		<DataAnnotationsValidator />
+		<div class="inputs">
+			<label>Instructor Name</label>
+			<InputText type="text" placeholder="" @bind-Value="instructor.Name" />
+		</div>
+		<div class="inputs">
+			<label>Salary</label>
+			<InputNumber @bind-Value="instructor.Salary" />
+		</div>
+		<div class="inputs">
+			<label>Course</label>
+			<InputSelect @bind-Value="instructor.Courseid">
+				@foreach (var course in courses)
+				{
+					<option value="@course.Id">@course.CourseName</option>
+				}
+			</InputSelect>
+		</div>
+		<Success Added="@Name"></Success>
+		<div class="Button">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</EditForm>
+}
+
+<button class="btn-showData student" @onclick="ShowinstructorsData">See The Instuctors we Have</button>
+@code
+{
+	private string Name = "instructor";
+	bool Success = false;
+	SchoolSystemDB dB = new SchoolSystemDB();
+	Instructor instructor = new Instructor();
+	List<Course> courses = new List<Course>();
+	protected override void OnInitialized()
+	{
+		courses = dB.Courses.ToList();
+		base.OnInitialized();
+	}
+	void onValidSubmit()
+	{
+		dB.Instructors.Add(instructor);
+		dB.SaveChanges();
+		instructor = new Instructor();
+		Success = true;
+	}
+	void ShowinstructorsData()
+	{
+		NavigationManager.NavigateTo("InstructorList");
+	}
+}

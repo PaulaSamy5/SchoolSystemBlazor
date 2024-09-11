@@ -1,0 +1,46 @@
+﻿@page "/AddCourse"
+@inject NavigationManager NavigationManager
+@if (!Success)
+{
+	<EditForm Model="course" OnValidSubmit="onValidSubmit">
+
+		<div class="mb-3">
+			<label for="exampleInputEmail1" class="form-label label">Add new course here</label>
+			<InputText class="form-control takeData" @bind-Value="course.CourseName" placeholder = "Add course here ..."/>
+		</div>
+		<button type="submit" class="btn btn-primary submit-btn">Submit</button>
+	</EditForm>
+}
+else
+{
+	<EditForm Model="course" OnValidSubmit="onValidSubmit">
+
+		<div class="mb-3">
+			<label for="exampleInputEmail1" class="form-label">Add new course here</label>
+			<InputText class="form-control" @bind-Value="course.CourseName" />
+			<Success Added="@Name"/>
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</EditForm>
+}
+
+<button class="btn-showData" @onclick="ShowCoursesData">See The Courses we Have</button>
+@code
+{
+	private string Name = "Course";
+	bool Success = false;
+	SchoolSystemDB dB = new SchoolSystemDB();
+	Course course = new Course();
+	void onValidSubmit()
+	{
+		dB.Courses.Add(course);
+		dB.SaveChanges();
+		course = new Course();
+		Success = true;
+	}
+	void ShowCoursesData()
+	{
+		NavigationManager.NavigateTo("CoursesList");
+	}
+
+}

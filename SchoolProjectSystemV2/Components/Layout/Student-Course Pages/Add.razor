@@ -1,0 +1,119 @@
+﻿
+@page "/AddStudentCourse"
+@using SchoolProjectSystemV2.Components.Pages
+
+<div style="margin-bottom: 20px" class="Heading">
+    <h1 style="font-size: 30px;">Add courses for students from here</h1>
+</div>
+
+@if (!Success)
+{
+    <EditForm Model="studentCourse" OnValidSubmit="onValidSubmit">
+        <div class="studentCourse">
+            <div class="inputs">
+                <label>Student Name</label>
+                <InputSelect @bind-Value="studentCourse.StudentId" @oninput="OnStudentChange">
+                    @foreach (var student in students)
+                    {
+                        <option value="@student.Id">@student.FirstName @student.MiddleName @student.LastName</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="inputs">
+                <label>Course Name</label>
+                <InputSelect @bind-Value="studentCourse.CourseId">
+                    <option selected > -- Select a Course -- </option>
+
+                    @foreach (var course in availableCourses)
+                    {
+                        <option value="@course.Id">@course.CourseName</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+}
+else
+{
+    <EditForm Model="studentCourse" OnValidSubmit="onValidSubmit">
+        <div class="studentCourse">
+            <div class="inputs">
+                <label>Student Name</label>
+                <InputSelect @bind-Value="studentCourse.StudentId" @oninput="OnStudentChange">
+                    @foreach (var student in students)
+                    {
+                        <option value="@student.Id">@student.FirstName @student.MiddleName @student.LastName</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="inputs">
+                <label>Course Name</label>
+                <InputSelect @bind-Value="studentCourse.CourseId">
+                    <option selected> -- Select a Course -- </option>
+
+                    @foreach (var course in availableCourses)
+                    {
+                        <option value="@course.Id">@course.CourseName</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <Success Added="@Name" />
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+}
+
+@code {
+
+    private string Name = "Course for student";
+    bool Success = false;
+    SchoolSystemDB dB = new SchoolSystemDB();
+    List<Student> students = new List<Student>();
+    List<Course> courses = new List<Course>();
+    StudentCourse studentCourse = new();
+    List<Course> availableCourses = new List<Course>();
+
+    protected override void OnInitialized()
+    {
+        students = dB.students.ToList();
+        courses = dB.Courses.ToList();
+        availableCourses = courses;
+        base.OnInitialized();
+    }
+
+    void OnStudentChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var selectedStudentId))
+        {
+            // Get the courses taken by the selected student
+            var takenCourses = dB.studentCourses.Where(sc => sc.StudentId == selectedStudentId)
+                                                 .Select(sc => sc.CourseId)
+                                                 .ToList();
+            // Update available courses
+            availableCourses = courses.Where(c => !takenCourses.Contains(c.Id)).ToList();
+        }
+    }
+
+    void onValidSubmit()
+    {
+        var course = dB.Courses.Find(studentCourse.CourseId);
+        if (course != null)
+        {
+            studentCourse.Course = course; // Ensure the Course entity is attached
+
+            dB.studentCourses.Add(studentCourse);
+            dB.SaveChanges();
+
+            MessagingCenter.Send(this, "CourseAdded", studentCourse);
+
+            studentCourse = new StudentCourse();
+            Success = true;
+
+            // Reset the available courses based on the new student selection
+            OnStudentChange(new ChangeEventArgs { Value = studentCourse.StudentId });
+        }
+    }
+
+}
+

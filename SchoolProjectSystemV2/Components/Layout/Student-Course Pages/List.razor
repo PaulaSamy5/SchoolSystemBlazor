@@ -1,0 +1,80 @@
+﻿@page "/List"
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Student Name</th>
+			<th scope="col">Courses</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			int count = 1;
+		}
+		@foreach (var studentGroup in studentCoursesGroupedByStudent)
+		{
+			<tr>
+				<td>@count</td>
+				<td>@studentGroup.Student.FirstName @studentGroup.Student.MiddleName @studentGroup.Student.LastName</td>
+				<td>@studentGroup.Courses</td>
+				
+			</tr>
+			count++;
+		}
+	</tbody>
+</table>
+
+@code {
+	SchoolSystemDB dB = new();
+	List<StudentCourse> studentCourses = new List<StudentCourse>();
+	List<Student> students = new List<Student>();
+	List<Course> courses = new List<Course>();
+
+	// Grouped data
+	IEnumerable<dynamic> studentCoursesGroupedByStudent = Enumerable.Empty<dynamic>();
+
+	protected override Task OnInitializedAsync()
+	{
+		MessagingCenter.Subscribe<Add, StudentCourse>(this, "CourseAdded", (sender, courseAdd) =>
+		{
+
+			Console.WriteLine($"Hello {courseAdd.Student.FirstName}");
+			studentCourses.Add(courseAdd);
+			studentCourses = dB.studentCourses.Distinct().ToList();
+			students = dB.students.ToList();
+			courses = dB.Courses.ToList();
+			GroupStudentCourses();
+			//GroupStudentCourses();
+			InvokeAsync(() => { StateHasChanged(); });
+		});
+		return base.OnInitializedAsync();
+	}
+
+
+	protected override void OnInitialized()
+	{
+		studentCourses = dB.studentCourses.Distinct().ToList();
+		students = dB.students.ToList();
+		studentCoursesGroupedByStudent = dB.studentCourses.ToList();
+		courses = dB.Courses.ToList();
+		GroupStudentCourses();
+		base.OnInitialized();
+	}
+
+	// private readonly Func<IEnumerable<StudentCourse>, string> CourseNamesFormatter = scList =>
+	// string.Join(" | ", scList.Select(sc => sc.Course?.CourseName ?? "Unknown"));
+
+	private void GroupStudentCourses()
+	{
+		studentCoursesGroupedByStudent = studentCourses
+			.GroupBy(sc => sc.Student)
+			.Select(g => new
+			{
+				Student = g.Key,
+				Courses = string.Join(" | ", g.Select(c => c.Course.CourseName)) // Use the stored function here
+			})
+			.ToList();
+	}
+
+
+}
